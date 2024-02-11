@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/dg/acordia/models"
+	"github.com/danielgz405/Resev/models"
 )
 
 func InsertUser(ctx context.Context, user *models.InsertUser) (*models.Profile, error) {

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/dg/acordia/models"
+	"github.com/danielgz405/Resev/models"
 )
 
 type Repository interface {
@@ -13,12 +13,6 @@ type Repository interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	UpdateUser(ctx context.Context, data models.UpdateUser) (*models.Profile, error)
 	DeleteUser(ctx context.Context, id string) error
-
-	//events
-	ListEvents(ctx context.Context) ([]models.Event, error)
-	InsertPackage(ctx context.Context, packageEvent *models.InsertPackage) (*models.Package, error)
-	InsertAutomobile(ctx context.Context, automobile *models.InsertAutomobile) (*models.Automobile, error)
-	InsertVisitor(ctx context.Context, visitor *models.InsertVisitor) (*models.Visitor, error)
 
 	//Close the connection
 	Close() error

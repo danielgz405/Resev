@@ -1,4 +1,4 @@
-module github.com/dg/acordia
+module github.com/danielgz405/Resev
 
 go 1.19
 

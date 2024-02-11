@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/dg/acordia/middleware"
-	"github.com/dg/acordia/models"
-	"github.com/dg/acordia/repository"
-	"github.com/dg/acordia/responses"
-	"github.com/dg/acordia/server"
+	"github.com/danielgz405/Resev/middleware"
+	"github.com/danielgz405/Resev/models"
+	"github.com/danielgz405/Resev/repository"
+	"github.com/danielgz405/Resev/responses"
+	"github.com/danielgz405/Resev/server"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 )

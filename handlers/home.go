@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/dg/acordia/server"
+	"github.com/danielgz405/Resev/server"
 )
 
 type HomeResponse struct {

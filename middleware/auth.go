@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dg/acordia/models"
-	"github.com/dg/acordia/repository"
-	"github.com/dg/acordia/responses"
-	"github.com/dg/acordia/server"
+	"github.com/danielgz405/Resev/models"
+	"github.com/danielgz405/Resev/repository"
+	"github.com/danielgz405/Resev/responses"
+	"github.com/danielgz405/Resev/server"
 	"github.com/golang-jwt/jwt"
 )
 

@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	database "github.com/dg/acordia/database"
-	repository "github.com/dg/acordia/repository"
+	database "github.com/danielgz405/Resev/database"
+	repository "github.com/danielgz405/Resev/repository"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )

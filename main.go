@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dg/acordia/handlers"
-	"github.com/dg/acordia/middleware"
-	"github.com/dg/acordia/server"
+	"github.com/danielgz405/Resev/handlers"
+	"github.com/danielgz405/Resev/middleware"
+	"github.com/danielgz405/Resev/server"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -47,10 +47,4 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/user/delete", handlers.DeleteUserHandler(s)).Methods(http.MethodDelete)
 	r.HandleFunc("/user/update", handlers.UpdateUserHandler(s)).Methods(http.MethodPatch)
 	r.HandleFunc("/user/profile/{userId}", handlers.ProfileHandler(s)).Methods(http.MethodGet)
-
-	//events
-	r.HandleFunc("/automobile", handlers.InsertAutomobileHandler(s)).Methods(http.MethodPost)
-	r.HandleFunc("/visitor", handlers.InsertVisitorHandler(s)).Methods(http.MethodPost)
-	r.HandleFunc("/package", handlers.InsertPackageHandler(s)).Methods(http.MethodPost)
-	r.HandleFunc("/events/list", handlers.ListEventsHandler(s)).Methods(http.MethodGet)
 }
