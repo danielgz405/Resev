@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	database "github.com/danielgz405/Resev/database"
-	repository "github.com/danielgz405/Resev/repository"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -16,6 +14,7 @@ type Config struct {
 	Port      string
 	JWTSecret string
 	DbURI     string
+	DB_URI_2  string
 }
 
 type Server interface {
@@ -41,6 +40,9 @@ func NewServer(ctx context.Context, config *Config) (*Broker, error) {
 	if config.DbURI == "" {
 		return nil, errors.New("database uri is required")
 	}
+	if config.DB_URI_2 == "" {
+		return nil, errors.New("database uri two is required")
+	}
 	broker := &Broker{
 		config: config,
 		router: mux.NewRouter(),
@@ -59,11 +61,11 @@ func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 	})
 
 	handler := c.Handler(b.router)
-	repo, err := database.NewMongoRepo(b.config.DbURI)
-	if err != nil {
-		log.Fatal(err)
-	}
-	repository.SetRepository(repo)
+	//repo, err := database.NewMongoRepo(b.config.DbURI)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//repository.SetRepository(repo)
 	log.Println("Server started on port", b.config.Port)
 	if err := http.ListenAndServe(b.config.Port, handler); err != nil {
 		log.Fatal("Server failed to start", err)

@@ -14,6 +14,22 @@ type Repository interface {
 	UpdateUser(ctx context.Context, data models.UpdateUser) (*models.Profile, error)
 	DeleteUser(ctx context.Context, id string) error
 
+	//tables
+	InsertTable(ctx context.Context, typeClient *models.InsertTable) (*models.Table, error)
+	GetTableById(ctx context.Context, id string) (*models.Table, error)
+	ListTables(ctx context.Context) ([]models.Table, error)
+	UpdateTable(ctx context.Context, data *models.UpdateTable, id string) (*models.Table, error)
+	DeleteTable(ctx context.Context, id string) error
+	ListTablesByPage(ctx context.Context, limit int, page int) ([]models.Table, int, error)
+
+	//roles
+	InsertRole(ctx context.Context, typeClient *models.InsertRole) (*models.Role, error)
+	GetRoleById(ctx context.Context, id string) (*models.Role, error)
+	ListRoles(ctx context.Context) ([]models.Role, error)
+	UpdateRole(ctx context.Context, data *models.UpdateRole, id string) (*models.Role, error)
+	DeleteRole(ctx context.Context, id string) error
+	ListRolesByPage(ctx context.Context, limit int, page int) ([]models.Role, int, error)
+
 	//Close the connection
 	Close() error
 }

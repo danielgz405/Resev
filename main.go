@@ -22,11 +22,13 @@ func main() {
 	PORT := os.Getenv("PORT")
 	JWT_SECRET := os.Getenv("JWT_SECRET")
 	DB_URI := os.Getenv("DB_URI")
+	DB_URI_2 := os.Getenv("DB_URI_2")
 
 	s, err := server.NewServer(context.Background(), &server.Config{
 		Port:      ":" + PORT,
 		JWTSecret: JWT_SECRET,
 		DbURI:     DB_URI,
+		DB_URI_2:  DB_URI_2,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -47,4 +49,20 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/user/delete", handlers.DeleteUserHandler(s)).Methods(http.MethodDelete)
 	r.HandleFunc("/user/update", handlers.UpdateUserHandler(s)).Methods(http.MethodPatch)
 	r.HandleFunc("/user/profile/{userId}", handlers.ProfileHandler(s)).Methods(http.MethodGet)
+
+	//Table
+	r.HandleFunc("/table/create", handlers.CreateTableHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/table/{id}", handlers.GetTableByIdHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/table/updated/{id}", handlers.UpdateTableHandler(s)).Methods(http.MethodPatch)
+	r.HandleFunc("/table/delete/{id}", handlers.DeleteTableHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/table/list/{limit}/{page}", handlers.ListTablesByPageHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/table/list/all", handlers.ListTablesHandler(s)).Methods(http.MethodGet)
+
+	//Role
+	r.HandleFunc("/role/create", handlers.CreateRoleHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/role/{id}", handlers.GetRoleByIdHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/role/updated/{id}", handlers.UpdateRoleHandler(s)).Methods(http.MethodPatch)
+	r.HandleFunc("/role/delete/{id}", handlers.DeleteRoleHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/role/list/{limit}/{page}", handlers.ListRolesByPageHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/role/list/all", handlers.ListRolesHandler(s)).Methods(http.MethodGet)
 }

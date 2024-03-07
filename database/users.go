@@ -38,11 +38,11 @@ func (repo *MongoRepo) GetUserById(ctx context.Context, id string) (*models.Prof
 	}
 	// Populate profile
 	var profile = models.Profile{
-		Id:        user.Id,
-		Name:      user.Name,
-		Email:     user.Email,
-		Image:     user.Image,
-		DesertRef: user.DesertRef,
+		Id:       user.Id,
+		Name:     user.Name,
+		Email:    user.Email,
+		Image:    user.Image,
+		ImageRef: user.ImageRef,
 	}
 	return &profile, nil
 }
@@ -65,10 +65,12 @@ func (repo *MongoRepo) UpdateUser(ctx context.Context, data models.UpdateUser) (
 		"$set": bson.M{},
 	}
 	iterableData := map[string]interface{}{
-		"name":      data.Name,
-		"email":     data.Email,
-		"image":     data.Image,
-		"desertref": data.DesertRef,
+		"name":     data.Name,
+		"email":    data.Email,
+		"phone":    data.Phone,
+		"role_id":  data.Role_id,
+		"image":    data.Image,
+		"imageRef": data.ImageRef,
 	}
 	for key, value := range iterableData {
 		if value != "" {

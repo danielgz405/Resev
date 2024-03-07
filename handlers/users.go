@@ -2,35 +2,57 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
+	"github.com/danielgz405/Resev/database"
 	"github.com/danielgz405/Resev/middleware"
 	"github.com/danielgz405/Resev/models"
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
 	"github.com/danielgz405/Resev/server"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type SignUpLoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Role_id  string `bson:"role_id" json:"role_id"`
+	Phone    string `json:"phone"`
 	Name     string `json:"name"`
 }
 
 type UpdateUserRequest struct {
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Image     string `json:"image"`
-	DesertRef string `json:"desertref"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	Role_id  string `bson:"role_id" json:"role_id"`
+	Image    string `json:"image"`
+	ImageRef string `json:"imageRef"`
+}
+
+func databaseConnection(s server.Server) {
+	repo, err := database.NewMongoRepo(s.Config().DbURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	repository.SetRepository(repo)
 }
 
 func SignUpHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//conexion
+		databaseConnection(s)
 		w.Header().Set("Content-Type", "application/json")
 		var req = SignUpLoginRequest{}
 		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			responses.BadRequest(w, "Invalid request body")
+			return
+		}
+		_, err = primitive.ObjectIDFromHex(req.Role_id)
 		if err != nil {
 			responses.BadRequest(w, "Invalid request body")
 			return
@@ -42,6 +64,8 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 		}
 		createUser := models.InsertUser{
 			Email:    req.Email,
+			Phone:    req.Phone,
+			Role_id:  req.Role_id,
 			Password: string(hashedPassword),
 			Name:     req.Name,
 		}
@@ -50,15 +74,38 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error creating user")
 			return
 		}
+		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
+		if err != nil {
+			responses.BadRequest(w, "Error getting role")
+			return
+		}
+
+		responseProfile := responses.UserResponse{
+			Id:       profile.Id.Hex(),
+			Name:     profile.Name,
+			Email:    profile.Email,
+			Phone:    profile.Phone,
+			Role:     *role,
+			Image:    profile.Image,
+			ImageRef: profile.ImageRef,
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(profile)
+		json.NewEncoder(w).Encode(responseProfile)
 	}
 }
 
 func LoginHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//conexion
+		databaseConnection(s)
 		var req = SignUpLoginRequest{}
 		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			responses.BadRequest(w, "Invalid request body")
+			return
+		}
+		_, err = primitive.ObjectIDFromHex(req.Role_id)
 		if err != nil {
 			responses.BadRequest(w, "Invalid request body")
 			return
@@ -69,23 +116,43 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 		var profile = models.Profile{
-			Id:        user.Id,
-			Name:      user.Name,
-			Email:     user.Email,
-			Image:     user.Image,
-			DesertRef: user.DesertRef,
+			Id:       user.Id,
+			Name:     user.Name,
+			Phone:    user.Phone,
+			Email:    user.Email,
+			Role_id:  user.Role_id,
+			Image:    user.Image,
+			ImageRef: user.ImageRef,
 		}
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 			responses.NoAuthResponse(w, http.StatusUnauthorized, "Invalid credentials")
 			return
 		}
+		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
+		if err != nil {
+			responses.BadRequest(w, "Error getting role")
+			return
+		}
+
+		responseProfile := responses.UserResponse{
+			Id:       profile.Id.Hex(),
+			Name:     profile.Name,
+			Email:    profile.Email,
+			Phone:    profile.Phone,
+			Role:     *role,
+			Image:    profile.Image,
+			ImageRef: profile.ImageRef,
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(profile)
+		json.NewEncoder(w).Encode(responseProfile)
 	}
 }
 
 func ProfileHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//conexion
+		databaseConnection(s)
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
 		profile, err := repository.GetUserById(r.Context(), params["userId"])
@@ -93,13 +160,31 @@ func ProfileHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Invalid request")
 			return
 		}
+		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
+		if err != nil {
+			responses.BadRequest(w, "Error getting role")
+			return
+		}
+
+		responseProfile := responses.UserResponse{
+			Id:       profile.Id.Hex(),
+			Name:     profile.Name,
+			Email:    profile.Email,
+			Phone:    profile.Phone,
+			Role:     *role,
+			Image:    profile.Image,
+			ImageRef: profile.ImageRef,
+		}
+
 		// Handle request
-		json.NewEncoder(w).Encode(profile)
+		json.NewEncoder(w).Encode(responseProfile)
 	}
 }
 
 func UpdateUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//conexion
+		databaseConnection(s)
 		//Token validation
 		user, err := middleware.ValidateToken(s, w, r)
 		if err != nil {
@@ -114,11 +199,13 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 		data := models.UpdateUser{
-			Id:        user.Id.Hex(),
-			Name:      req.Name,
-			Email:     req.Email,
-			Image:     req.Image,
-			DesertRef: req.DesertRef,
+			Id:       user.Id.Hex(),
+			Name:     req.Name,
+			Email:    req.Email,
+			Phone:    req.Phone,
+			Role_id:  req.Role_id,
+			Image:    req.Image,
+			ImageRef: req.ImageRef,
 		}
 		updatedUser, err := repository.UpdateUser(r.Context(), data)
 		if err != nil {
@@ -132,6 +219,8 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 
 func DeleteUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//conexion
+		databaseConnection(s)
 		//Token validation
 		user, err := middleware.ValidateToken(s, w, r)
 		if err != nil {
