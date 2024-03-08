@@ -65,4 +65,13 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/role/delete/{id}", handlers.DeleteRoleHandler(s)).Methods(http.MethodDelete)
 	r.HandleFunc("/role/list/{limit}/{page}", handlers.ListRolesByPageHandler(s)).Methods(http.MethodGet)
 	r.HandleFunc("/role/list/all", handlers.ListRolesHandler(s)).Methods(http.MethodGet)
+
+	//Plate
+	r.HandleFunc("/plate/create", handlers.CreatePlateHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/plate/{id}", handlers.GetPlateByIdHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/plate/updated/{id}", handlers.UpdatePlateHandler(s)).Methods(http.MethodPatch)
+	r.HandleFunc("/plate/delete/{id}", handlers.DeletePlateHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/plate/list/{limit}/{page}", handlers.ListPlatesByPageHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/plate/list/all", handlers.ListPlatesHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/plate/list/ids", handlers.GetPlatesByIdsHandler(s)).Methods(http.MethodPatch)
 }

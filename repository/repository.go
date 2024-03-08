@@ -30,6 +30,15 @@ type Repository interface {
 	DeleteRole(ctx context.Context, id string) error
 	ListRolesByPage(ctx context.Context, limit int, page int) ([]models.Role, int, error)
 
+	//plates
+	InsertPlate(ctx context.Context, typeClient *models.InsertPlate) (*models.Plate, error)
+	GetPlateById(ctx context.Context, id string) (*models.Plate, error)
+	ListPlates(ctx context.Context) ([]models.Plate, error)
+	UpdatePlate(ctx context.Context, data *models.UpdatePlate, id string) (*models.Plate, error)
+	DeletePlate(ctx context.Context, id string) error
+	ListPlatesByPage(ctx context.Context, limit int, page int) ([]models.Plate, int, error)
+	GetPlatesByIds(ctx context.Context, ids []string) ([]models.Plate, error)
+
 	//Close the connection
 	Close() error
 }
