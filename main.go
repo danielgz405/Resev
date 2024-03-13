@@ -74,4 +74,12 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/plate/list/{limit}/{page}", handlers.ListPlatesByPageHandler(s)).Methods(http.MethodGet)
 	r.HandleFunc("/plate/list/all", handlers.ListPlatesHandler(s)).Methods(http.MethodGet)
 	r.HandleFunc("/plate/list/ids", handlers.GetPlatesByIdsHandler(s)).Methods(http.MethodPatch)
+
+	//Order
+	r.HandleFunc("/order/create", handlers.CreateOrderHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/order/{id}", handlers.GetOrderByIdHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/order/updated/{id}", handlers.UpdateOrderHandler(s)).Methods(http.MethodPatch)
+	r.HandleFunc("/order/delete/{id}", handlers.DeleteOrderHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/order/list/{limit}/{page}", handlers.ListOrdersByPageHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/order/list/all", handlers.ListOrdersHandler(s)).Methods(http.MethodGet)
 }

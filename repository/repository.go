@@ -39,6 +39,14 @@ type Repository interface {
 	ListPlatesByPage(ctx context.Context, limit int, page int) ([]models.Plate, int, error)
 	GetPlatesByIds(ctx context.Context, ids []string) ([]models.Plate, error)
 
+	//Otrder
+	InsertOrder(ctx context.Context, typeClient *models.InsertOrder) (*models.Order, error)
+	GetOrderById(ctx context.Context, id string) (*models.Order, error)
+	ListOrders(ctx context.Context) ([]models.Order, error)
+	UpdateOrder(ctx context.Context, data *models.UpdateOrder, id string) (*models.Order, error)
+	DeleteOrder(ctx context.Context, id string) error
+	ListOrdersByPage(ctx context.Context, limit int, page int) ([]models.Order, int, error)
+
 	//Close the connection
 	Close() error
 }
