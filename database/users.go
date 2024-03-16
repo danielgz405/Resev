@@ -33,9 +33,6 @@ func (repo *MongoRepo) GetUserById(ctx context.Context, id string) (*models.Prof
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	// Populate profile
 	var profile = models.Profile{
 		Id:       user.Id,
