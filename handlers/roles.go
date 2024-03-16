@@ -9,6 +9,7 @@ import (
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
 	"github.com/danielgz405/Resev/server"
+	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -19,7 +20,7 @@ type InsertRoleRequest struct {
 
 func CreateRoleHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := InsertRoleRequest{}
@@ -44,7 +45,7 @@ func CreateRoleHandler(s server.Server) http.HandlerFunc {
 
 func GetRoleByIdHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -84,7 +85,7 @@ func UpdateRoleHandler(s server.Server) http.HandlerFunc {
 
 func DeleteRoleHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -99,7 +100,7 @@ func DeleteRoleHandler(s server.Server) http.HandlerFunc {
 
 func ListRolesByPageHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -128,7 +129,7 @@ func ListRolesByPageHandler(s server.Server) http.HandlerFunc {
 
 func ListRolesHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		roles, err := repository.ListRoles(r.Context())

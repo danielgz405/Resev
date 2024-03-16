@@ -2,15 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
-	"github.com/danielgz405/Resev/database"
 	"github.com/danielgz405/Resev/middleware"
 	"github.com/danielgz405/Resev/models"
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
 	"github.com/danielgz405/Resev/server"
+	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -33,18 +32,10 @@ type UpdateUserRequest struct {
 	ImageRef string `json:"imageRef"`
 }
 
-func databaseConnection(s server.Server) {
-	repo, err := database.NewMongoRepo(s.Config().DbURI)
-	if err != nil {
-		log.Fatal(err)
-	}
-	repository.SetRepository(repo)
-}
-
 func SignUpHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		w.Header().Set("Content-Type", "application/json")
 		var req = SignUpLoginRequest{}
 		err := json.NewDecoder(r.Body).Decode(&req)
@@ -98,7 +89,7 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 func LoginHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		var req = SignUpLoginRequest{}
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
@@ -152,7 +143,7 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 func ProfileHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
 		profile, err := repository.GetUserById(r.Context(), params["userId"])
@@ -184,7 +175,7 @@ func ProfileHandler(s server.Server) http.HandlerFunc {
 func UpdateUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Token validation
 		user, err := middleware.ValidateToken(s, w, r)
 		if err != nil {
@@ -220,7 +211,7 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 func DeleteUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
-		databaseConnection(s)
+		utils.DatabaseConnection(s)
 		//Token validation
 		user, err := middleware.ValidateToken(s, w, r)
 		if err != nil {

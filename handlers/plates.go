@@ -9,6 +9,7 @@ import (
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
 	"github.com/danielgz405/Resev/server"
+	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -26,7 +27,7 @@ type GetPlatesByIdsRequest struct {
 
 func CreatePlateHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := InsertPlateRequest{}
@@ -54,7 +55,7 @@ func CreatePlateHandler(s server.Server) http.HandlerFunc {
 
 func GetPlateByIdHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -97,7 +98,7 @@ func UpdatePlateHandler(s server.Server) http.HandlerFunc {
 
 func DeletePlateHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -112,7 +113,7 @@ func DeletePlateHandler(s server.Server) http.HandlerFunc {
 
 func ListPlatesByPageHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -141,7 +142,7 @@ func ListPlatesByPageHandler(s server.Server) http.HandlerFunc {
 
 func ListPlatesHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		plates, err := repository.ListPlates(r.Context())
@@ -156,7 +157,7 @@ func ListPlatesHandler(s server.Server) http.HandlerFunc {
 
 func GetPlatesByIdsHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := GetPlatesByIdsRequest{}

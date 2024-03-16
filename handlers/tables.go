@@ -2,15 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/danielgz405/Resev/database"
 	"github.com/danielgz405/Resev/models"
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
 	"github.com/danielgz405/Resev/server"
+	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -19,17 +18,9 @@ type InsertTableRequest struct {
 	Observation string `json:"observation"`
 }
 
-func databaseConnection_2(s server.Server) {
-	repo, err := database.NewMongoRepo(s.Config().DB_URI_2)
-	if err != nil {
-		log.Fatal(err)
-	}
-	repository.SetRepository(repo)
-}
-
 func CreateTableHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection_2(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := InsertTableRequest{}
@@ -54,7 +45,7 @@ func CreateTableHandler(s server.Server) http.HandlerFunc {
 
 func GetTableByIdHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection_2(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -94,7 +85,7 @@ func UpdateTableHandler(s server.Server) http.HandlerFunc {
 
 func DeleteTableHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection_2(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -109,7 +100,7 @@ func DeleteTableHandler(s server.Server) http.HandlerFunc {
 
 func ListTablesByPageHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection_2(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -138,7 +129,7 @@ func ListTablesByPageHandler(s server.Server) http.HandlerFunc {
 
 func ListTablesHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection_2(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		tables, err := repository.ListTables(r.Context())

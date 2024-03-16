@@ -9,6 +9,7 @@ import (
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
 	"github.com/danielgz405/Resev/server"
+	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -24,7 +25,7 @@ type InsertOrderRequest struct {
 
 func CreateOrderHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := InsertOrderRequest{}
@@ -62,7 +63,7 @@ func CreateOrderHandler(s server.Server) http.HandlerFunc {
 
 func GetOrderByIdHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -113,7 +114,7 @@ func UpdateOrderHandler(s server.Server) http.HandlerFunc {
 
 func DeleteOrderHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -128,7 +129,7 @@ func DeleteOrderHandler(s server.Server) http.HandlerFunc {
 
 func ListOrdersByPageHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -157,7 +158,7 @@ func ListOrdersByPageHandler(s server.Server) http.HandlerFunc {
 
 func ListOrdersHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		databaseConnection(s)
+		utils.DatabaseConnection_2(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		orders, err := repository.ListOrders(r.Context())
