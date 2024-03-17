@@ -47,6 +47,15 @@ type Repository interface {
 	DeleteOrder(ctx context.Context, id string) error
 	ListOrdersByPage(ctx context.Context, limit int, page int) ([]models.Order, int, error)
 
+	//boooking
+	InsertBooking(ctx context.Context, typeClient *models.InsertBooking) (*models.Booking, error)
+	GetBookingById(ctx context.Context, id string) (*models.Booking, error)
+	ListBookings(ctx context.Context) ([]models.Booking, error)
+	UpdateBooking(ctx context.Context, data *models.UpdateBooking, id string) (*models.Booking, error)
+	DeleteBooking(ctx context.Context, id string) error
+	ListBookingsByPage(ctx context.Context, limit int, page int) ([]models.Booking, int, error)
+	GetBookingsByIds(ctx context.Context, ids []string) ([]models.Booking, error)
+
 	//Close the connection
 	Close() error
 }
