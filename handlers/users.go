@@ -24,12 +24,13 @@ type SignUpLoginRequest struct {
 }
 
 type UpdateUserRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Role_id  string `bson:"role_id" json:"role_id"`
-	Image    string `json:"image"`
-	ImageRef string `json:"imageRef"`
+	Name     string   `json:"name"`
+	Email    string   `json:"email"`
+	Phone    string   `json:"phone"`
+	Role_id  string   `bson:"role_id" json:"role_id"`
+	Image    string   `json:"image"`
+	ImageRef string   `json:"imageRef"`
+	Bookings []string `json:"bookings"`
 }
 
 func SignUpHandler(s server.Server) http.HandlerFunc {
@@ -155,6 +156,11 @@ func ProfileHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting role"+err.Error())
 			return
 		}
+		booking, err := repository.GetBookingsByIds(r.Context(), profile.Bookings)
+		if err != nil {
+			responses.BadRequest(w, "Error getting booking"+err.Error())
+			return
+		}
 
 		responseProfile := responses.UserResponse{
 			Id:       profile.Id.Hex(),
@@ -164,6 +170,7 @@ func ProfileHandler(s server.Server) http.HandlerFunc {
 			Role:     *role,
 			Image:    profile.Image,
 			ImageRef: profile.ImageRef,
+			Bookings: booking,
 		}
 
 		// Handle request
@@ -196,6 +203,7 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 			Role_id:  req.Role_id,
 			Image:    req.Image,
 			ImageRef: req.ImageRef,
+			Bookings: req.Bookings,
 		}
 		updatedUser, err := repository.UpdateUser(r.Context(), data)
 		if err != nil {

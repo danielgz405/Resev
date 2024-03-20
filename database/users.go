@@ -68,6 +68,7 @@ func (repo *MongoRepo) UpdateUser(ctx context.Context, data models.UpdateUser) (
 		"role_id":  data.Role_id,
 		"image":    data.Image,
 		"imageRef": data.ImageRef,
+		"bookings": data.Bookings,
 	}
 	for key, value := range iterableData {
 		if value != "" {

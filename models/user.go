@@ -11,14 +11,8 @@ type User struct {
 	Role_id  string             `bson:"role_id" json:"role_id"`
 	Image    string             `bson:"image" json:"image"`
 	ImageRef string             `bson:"imageRef" json:"imageRef"`
+	Bookings []string           `bson:"bookings" json:"bookings"`
 }
-
-//Bookings
-//Name
-//Mail
-//Password
-//Phone
-//Role_id
 
 type Profile struct {
 	Id       primitive.ObjectID `bson:"_id" json:"_id"`
@@ -28,6 +22,7 @@ type Profile struct {
 	Role_id  string             `bson:"role_id" json:"role_id"`
 	Image    string             `bson:"image" json:"image"`
 	ImageRef string             `bson:"imageRef" json:"imageRef"`
+	Bookings []string           `bson:"bookings" json:"bookings"`
 }
 
 type InsertUser struct {
@@ -39,11 +34,12 @@ type InsertUser struct {
 }
 
 type UpdateUser struct {
-	Id       string `bson:"_id" json:"_id"`
-	Name     string `bson:"name" json:"name"`
-	Email    string `bson:"email" json:"email"`
-	Phone    string `bson:"phone" json:"phone"`
-	Role_id  string `bson:"role_id" json:"role_id"`
-	Image    string `bson:"image" json:"image"`
-	ImageRef string `bson:"imageRef" json:"imageRef"`
+	Id       string   `bson:"_id" json:"_id"`
+	Name     string   `bson:"name" json:"name"`
+	Email    string   `bson:"email" json:"email"`
+	Phone    string   `bson:"phone" json:"phone"`
+	Role_id  string   `bson:"role_id" json:"role_id"`
+	Image    string   `bson:"image" json:"image"`
+	ImageRef string   `bson:"imageRef" json:"imageRef"`
+	Bookings []string `bson:"bookings" json:"bookings"`
 }
