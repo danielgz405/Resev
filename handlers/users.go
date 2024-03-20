@@ -156,10 +156,15 @@ func ProfileHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting role"+err.Error())
 			return
 		}
-		booking, err := repository.GetBookingsByIds(r.Context(), profile.Bookings)
-		if err != nil {
-			responses.BadRequest(w, "Error getting booking"+err.Error())
-			return
+
+		booking := []models.Booking{}
+
+		if len(profile.Bookings) > 0 {
+			booking, err = repository.GetBookingsByIds(r.Context(), profile.Bookings)
+			if err != nil {
+				responses.BadRequest(w, "Error getting booking"+err.Error())
+				return
+			}
 		}
 
 		responseProfile := responses.UserResponse{
