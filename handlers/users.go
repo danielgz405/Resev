@@ -65,7 +65,7 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error creating user")
 			return
 		}
-		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
+		role, err := repository.GetRoleById(r.Context(), req.Role_id)
 		if err != nil {
 			responses.BadRequest(w, "Error getting role")
 			return
@@ -96,12 +96,11 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Invalid request body")
 			return
 		}
-		_, err = primitive.ObjectIDFromHex(req.Role_id)
+		user, err := repository.GetUserByEmail(r.Context(), req.Email)
 		if err != nil {
-			responses.BadRequest(w, "Invalid request body")
+			responses.BadRequest(w, "Error getting user")
 			return
 		}
-		user, err := repository.GetUserByEmail(r.Context(), req.Email)
 		if user == nil {
 			responses.NoAuthResponse(w, http.StatusUnauthorized, "Invalid credentials")
 			return
@@ -119,7 +118,7 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			responses.NoAuthResponse(w, http.StatusUnauthorized, "Invalid credentials")
 			return
 		}
-		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
+		role, err := repository.GetRoleById(r.Context(), user.Role_id)
 		if err != nil {
 			responses.BadRequest(w, "Error getting role")
 			return
@@ -153,7 +152,7 @@ func ProfileHandler(s server.Server) http.HandlerFunc {
 		}
 		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
 		if err != nil {
-			responses.BadRequest(w, "Error getting role")
+			responses.BadRequest(w, "Error getting role"+err.Error())
 			return
 		}
 

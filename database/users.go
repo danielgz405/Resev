@@ -28,16 +28,16 @@ func (repo *MongoRepo) GetUserById(ctx context.Context, id string) (*models.Prof
 	if err != nil {
 		return nil, err
 	}
-	// Find one and populate company
 	err = collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
-	// Populate profile
 	var profile = models.Profile{
 		Id:       user.Id,
 		Name:     user.Name,
 		Email:    user.Email,
+		Phone:    user.Phone,
+		Role_id:  user.Role_id,
 		Image:    user.Image,
 		ImageRef: user.ImageRef,
 	}
