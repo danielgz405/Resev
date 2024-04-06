@@ -184,6 +184,7 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			Role_id:  user.Role_id,
 			Image:    user.Image,
 			ImageRef: user.ImageRef,
+			Bookings: user.Bookings,
 		}
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 			responses.NoAuthResponse(w, http.StatusUnauthorized, "Invalid credentials")
@@ -195,6 +196,16 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
+		booking := []models.Booking{}
+
+		if len(profile.Bookings) > 0 {
+			booking, err = repository.GetBookingsByIds(r.Context(), profile.Bookings)
+			if err != nil {
+				responses.BadRequest(w, "Error getting booking"+err.Error())
+				return
+			}
+		}
+
 		responseProfile := responses.UserResponse{
 			Id:       profile.Id.Hex(),
 			Name:     profile.Name,
@@ -203,6 +214,7 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			Role:     *role,
 			Image:    profile.Image,
 			ImageRef: profile.ImageRef,
+			Bookings: booking,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -290,8 +302,36 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error updating user")
 			return
 		}
+
+		role, err := repository.GetRoleById(r.Context(), updatedUser.Role_id)
+		if err != nil {
+			responses.BadRequest(w, "Error getting role"+err.Error())
+			return
+		}
+
+		booking := []models.Booking{}
+
+		if len(updatedUser.Bookings) > 0 {
+			booking, err = repository.GetBookingsByIds(r.Context(), updatedUser.Bookings)
+			if err != nil {
+				responses.BadRequest(w, "Error getting booking"+err.Error())
+				return
+			}
+		}
+
+		responseProfile := responses.UserResponse{
+			Id:       updatedUser.Id.Hex(),
+			Name:     updatedUser.Name,
+			Email:    updatedUser.Email,
+			Phone:    updatedUser.Phone,
+			Role:     *role,
+			Image:    updatedUser.Image,
+			ImageRef: updatedUser.ImageRef,
+			Bookings: booking,
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(updatedUser)
+		json.NewEncoder(w).Encode(responseProfile)
 	}
 }
 
