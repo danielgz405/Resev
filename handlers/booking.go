@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -32,7 +31,7 @@ type GetBookingsByIdsRequest struct {
 
 func CreateBookingHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := InsertBookingRequest{}
@@ -43,27 +42,28 @@ func CreateBookingHandler(s server.Server) http.HandlerFunc {
 		}
 		tableID, err := primitive.ObjectIDFromHex(req.TableId)
 		if err != nil {
-			fmt.Println("Invalid request body", err)
+			responses.BadRequest(w, "Invalid request body"+err.Error())
 			return
 		}
 		userID, err := primitive.ObjectIDFromHex(req.UserId)
 		if err != nil {
-			fmt.Println("Invalid request body", err)
+			responses.BadRequest(w, "Invalid request body"+err.Error())
 			return
 		}
 		orderID, err := primitive.ObjectIDFromHex(req.OrderId)
 		if err != nil {
-			fmt.Println("Invalid request body", err)
+			responses.BadRequest(w, "Invalid request body"+err.Error())
 			return
 		}
 		layout := "Mon Jan 02 2006"
+		// dates should have the same format "Fri Apr 05 2024"
 		date, err := time.Parse(layout, req.Date)
 		if err != nil {
-			fmt.Println("Invalid request body")
+			responses.BadRequest(w, "Invalid request body"+err.Error())
 			return
 		}
 		if !utils.IsTimeFormat(req.Hour) {
-			fmt.Printf("Invalid request body: %s  hour is invalid.\n", req.Hour)
+			responses.BadRequest(w, "Invalid request body"+"req.Hour  hour is invalid.\n")
 			return
 		}
 		createBooking := models.InsertBooking{
@@ -87,7 +87,7 @@ func CreateBookingHandler(s server.Server) http.HandlerFunc {
 
 func GetBookingByIdHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -113,17 +113,17 @@ func UpdateBookingHandler(s server.Server) http.HandlerFunc {
 		}
 		tableID, err := primitive.ObjectIDFromHex(req.TableId)
 		if err != nil {
-			fmt.Println("Invalid request body", err)
+			responses.BadRequest(w, "Invalid request body"+err.Error())
 			return
 		}
 		layout := "Mon Jan 02 2006"
 		date, err := time.Parse(layout, req.Date)
 		if err != nil {
-			fmt.Println("Invalid request body")
+			responses.BadRequest(w, "Invalid request body"+err.Error())
 			return
 		}
 		if !utils.IsTimeFormat(req.Hour) {
-			fmt.Printf("Invalid request body: %s  hour is invalid.\n", req.Hour)
+			responses.BadRequest(w, "Invalid request body"+"req.Hour  hour is invalid.\n")
 			return
 		}
 		updateBooking := models.UpdateBooking{
@@ -145,7 +145,7 @@ func UpdateBookingHandler(s server.Server) http.HandlerFunc {
 
 func DeleteBookingHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -160,7 +160,7 @@ func DeleteBookingHandler(s server.Server) http.HandlerFunc {
 
 func ListBookingsByPageHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -189,7 +189,7 @@ func ListBookingsByPageHandler(s server.Server) http.HandlerFunc {
 
 func ListBookingsHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		bookings, err := repository.ListBookings(r.Context())
@@ -204,7 +204,7 @@ func ListBookingsHandler(s server.Server) http.HandlerFunc {
 
 func GetBookingsByIdsHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := GetBookingsByIdsRequest{}

@@ -38,6 +38,13 @@ func CreateTableHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error creating table")
 			return
 		}
+
+		err = repository.AuditOperation(r.Context(), table.Id.Hex(), "table", "insert")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(table)
 	}
@@ -73,6 +80,13 @@ func UpdateTableHandler(s server.Server) http.HandlerFunc {
 			Number:      req.Number,
 			Observation: req.Observation,
 		}
+
+		err = repository.AuditOperation(r.Context(), params["id"], "table", "update")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		table, err := repository.UpdateTable(r.Context(), &updateTable, params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error updating table")
@@ -89,7 +103,14 @@ func DeleteTableHandler(s server.Server) http.HandlerFunc {
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
-		err := repository.DeleteTable(r.Context(), params["id"])
+
+		err := repository.AuditOperation(r.Context(), params["id"], "table", "delete")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		err = repository.DeleteTable(r.Context(), params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error deleting table")
 			return

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/danielgz405/Resev/models"
 	"github.com/danielgz405/Resev/repository"
@@ -11,6 +12,7 @@ import (
 	"github.com/danielgz405/Resev/server"
 	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type InsertRoleRequest struct {
@@ -29,7 +31,12 @@ func CreateRoleHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Invalid request body")
 			return
 		}
+		if strings.Contains(strings.ToLower(req.Name), strings.ToLower("client")) || strings.Contains(strings.ToLower(req.Name), strings.ToLower("admin")) {
+			responses.BadRequest(w, "The name you have entered is reserved, please enter another one.")
+			return
+		}
 		createRole := models.InsertRole{
+			Id:          primitive.NewObjectID(),
 			Name:        req.Name,
 			Description: req.Description,
 		}
@@ -38,6 +45,13 @@ func CreateRoleHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error creating role")
 			return
 		}
+
+		err = repository.AuditOperation(r.Context(), role.Id.Hex(), "role", "insert")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(role)
 	}
@@ -73,6 +87,13 @@ func UpdateRoleHandler(s server.Server) http.HandlerFunc {
 			Name:        req.Name,
 			Description: req.Description,
 		}
+
+		err = repository.AuditOperation(r.Context(), params["id"], "role", "update")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		role, err := repository.UpdateRole(r.Context(), &updateRole, params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error updating role")
@@ -89,7 +110,14 @@ func DeleteRoleHandler(s server.Server) http.HandlerFunc {
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
-		err := repository.DeleteRole(r.Context(), params["id"])
+
+		err := repository.AuditOperation(r.Context(), params["id"], "role", "delete")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		err = repository.DeleteRole(r.Context(), params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error deleting role")
 			return

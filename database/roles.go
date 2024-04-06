@@ -36,6 +36,16 @@ func (repo *MongoRepo) GetRoleById(ctx context.Context, id string) (*models.Role
 	return &role, nil
 }
 
+func (repo *MongoRepo) GetRoleByName(ctx context.Context, name string) (*models.Role, error) {
+	collection := repo.client.Database("resev").Collection("role")
+	var role models.Role
+	err := collection.FindOne(ctx, bson.M{"name": name}).Decode(&role)
+	if err != nil {
+		return nil, err
+	}
+	return &role, nil
+}
+
 func (repo *MongoRepo) ListRoles(ctx context.Context) ([]models.Role, error) {
 	collection := repo.client.Database("resev").Collection("role")
 	cursor, err := collection.Find(ctx, bson.M{})

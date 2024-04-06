@@ -24,6 +24,7 @@ type Repository interface {
 
 	//roles
 	InsertRole(ctx context.Context, typeClient *models.InsertRole) (*models.Role, error)
+	GetRoleByName(ctx context.Context, name string) (*models.Role, error)
 	GetRoleById(ctx context.Context, id string) (*models.Role, error)
 	ListRoles(ctx context.Context) ([]models.Role, error)
 	UpdateRole(ctx context.Context, data *models.UpdateRole, id string) (*models.Role, error)
@@ -55,6 +56,9 @@ type Repository interface {
 	DeleteBooking(ctx context.Context, id string) error
 	ListBookingsByPage(ctx context.Context, limit int, page int) ([]models.Booking, int, error)
 	GetBookingsByIds(ctx context.Context, ids []string) ([]models.Booking, error)
+
+	//audit
+	AuditOperation(ctx context.Context, id string, table string, operationType string) error
 
 	//Close the connection
 	Close() error

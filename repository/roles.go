@@ -10,6 +10,10 @@ func InsertRole(ctx context.Context, typeClient *models.InsertRole) (*models.Rol
 	return implementation.InsertRole(ctx, typeClient)
 }
 
+func GetRoleByName(ctx context.Context, name string) (*models.Role, error) {
+	return implementation.GetRoleByName(ctx, name)
+}
+
 func GetRoleById(ctx context.Context, id string) (*models.Role, error) {
 	return implementation.GetRoleById(ctx, id)
 }

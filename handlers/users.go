@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/danielgz405/Resev/middleware"
 	"github.com/danielgz405/Resev/models"
 	"github.com/danielgz405/Resev/repository"
 	"github.com/danielgz405/Resev/responses"
@@ -44,6 +43,70 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Invalid request body")
 			return
 		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+		client, err := repository.GetRoleByName(r.Context(), "client")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		createUser := models.InsertUser{
+			Email:    req.Email,
+			Phone:    req.Phone,
+			Role_id:  client.Id.Hex(),
+			Password: string(hashedPassword),
+			Name:     req.Name,
+		}
+
+		profile, err := repository.InsertUser(r.Context(), &createUser)
+		if err != nil {
+			responses.BadRequest(w, "Error creating user")
+			return
+		}
+
+		err = repository.AuditOperation(r.Context(), profile.Id.Hex(), "users", "insert")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		role, err := repository.GetRoleById(r.Context(), profile.Role_id)
+		if err != nil {
+			responses.BadRequest(w, "Error getting role")
+			return
+		}
+
+		responseProfile := responses.UserResponse{
+			Id:       profile.Id.Hex(),
+			Name:     profile.Name,
+			Email:    profile.Email,
+			Phone:    profile.Phone,
+			Role:     *role,
+			Image:    profile.Image,
+			ImageRef: profile.ImageRef,
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(responseProfile)
+	}
+}
+
+func CreateUserHandler(s server.Server) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//conexion
+		utils.DatabaseConnection(s)
+		w.Header().Set("Content-Type", "application/json")
+		var req = SignUpLoginRequest{}
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			responses.BadRequest(w, "Invalid request body")
+			return
+		}
 		_, err = primitive.ObjectIDFromHex(req.Role_id)
 		if err != nil {
 			responses.BadRequest(w, "Invalid request body")
@@ -66,6 +129,13 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error creating user")
 			return
 		}
+
+		err = repository.AuditOperation(r.Context(), profile.Id.Hex(), "users", "insert")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		role, err := repository.GetRoleById(r.Context(), req.Role_id)
 		if err != nil {
 			responses.BadRequest(w, "Error getting role")
@@ -187,21 +257,19 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
 		utils.DatabaseConnection(s)
-		//Token validation
-		user, err := middleware.ValidateToken(s, w, r)
-		if err != nil {
-			return
-		}
+
 		// Handle request
 		w.Header().Set("Content-Type", "application/json")
+		params := mux.Vars(r)
+
 		var req = UpdateUserRequest{}
-		err = json.NewDecoder(r.Body).Decode(&req)
+		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			responses.BadRequest(w, "Invalid request body")
 			return
 		}
 		data := models.UpdateUser{
-			Id:       user.Id.Hex(),
+			Id:       params["id"],
 			Name:     req.Name,
 			Email:    req.Email,
 			Phone:    req.Phone,
@@ -210,6 +278,13 @@ func UpdateUserHandler(s server.Server) http.HandlerFunc {
 			ImageRef: req.ImageRef,
 			Bookings: req.Bookings,
 		}
+
+		err = repository.AuditOperation(r.Context(), params["id"], "users", "updated")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		updatedUser, err := repository.UpdateUser(r.Context(), data)
 		if err != nil {
 			responses.BadRequest(w, "Error updating user")
@@ -224,14 +299,17 @@ func DeleteUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//conexion
 		utils.DatabaseConnection(s)
-		//Token validation
-		user, err := middleware.ValidateToken(s, w, r)
-		if err != nil {
-			return
-		}
 		// Handle request
 		w.Header().Set("Content-Type", "application/json")
-		err = repository.DeleteUser(r.Context(), user.Id.Hex())
+		params := mux.Vars(r)
+
+		err := repository.AuditOperation(r.Context(), params["id"], "users", "delete")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		err = repository.DeleteUser(r.Context(), params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error deleting user")
 			return

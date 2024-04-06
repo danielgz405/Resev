@@ -15,6 +15,7 @@ type Config struct {
 	JWTSecret string
 	DbURI     string
 	DB_URI_2  string
+	DB_URI_3  string
 }
 
 type Server interface {
@@ -42,6 +43,9 @@ func NewServer(ctx context.Context, config *Config) (*Broker, error) {
 	}
 	if config.DB_URI_2 == "" {
 		return nil, errors.New("database uri two is required")
+	}
+	if config.DB_URI_3 == "" {
+		return nil, errors.New("database uri three is required")
 	}
 	broker := &Broker{
 		config: config,

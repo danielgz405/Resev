@@ -23,12 +23,14 @@ func main() {
 	JWT_SECRET := os.Getenv("JWT_SECRET")
 	DB_URI := os.Getenv("DB_URI")
 	DB_URI_2 := os.Getenv("DB_URI_2")
+	DB_URI_3 := os.Getenv("DB_URI_3")
 
 	s, err := server.NewServer(context.Background(), &server.Config{
 		Port:      ":" + PORT,
 		JWTSecret: JWT_SECRET,
 		DbURI:     DB_URI,
 		DB_URI_2:  DB_URI_2,
+		DB_URI_3:  DB_URI_3,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -46,8 +48,9 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/login", handlers.LoginHandler(s)).Methods(http.MethodPost)
 
 	//user
-	r.HandleFunc("/user/delete", handlers.DeleteUserHandler(s)).Methods(http.MethodDelete)
-	r.HandleFunc("/user/update", handlers.UpdateUserHandler(s)).Methods(http.MethodPatch)
+	r.HandleFunc("/user/create", handlers.CreateUserHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/user/delete/{id}", handlers.DeleteUserHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/user/update/{id}", handlers.UpdateUserHandler(s)).Methods(http.MethodPatch)
 	r.HandleFunc("/user/profile/{userId}", handlers.ProfileHandler(s)).Methods(http.MethodGet)
 
 	//Table

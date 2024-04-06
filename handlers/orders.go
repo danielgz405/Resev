@@ -25,7 +25,7 @@ type InsertOrderRequest struct {
 
 func CreateOrderHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		req := InsertOrderRequest{}
@@ -63,7 +63,7 @@ func CreateOrderHandler(s server.Server) http.HandlerFunc {
 
 func GetOrderByIdHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -114,7 +114,7 @@ func UpdateOrderHandler(s server.Server) http.HandlerFunc {
 
 func DeleteOrderHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -129,7 +129,7 @@ func DeleteOrderHandler(s server.Server) http.HandlerFunc {
 
 func ListOrdersByPageHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
@@ -158,7 +158,7 @@ func ListOrdersByPageHandler(s server.Server) http.HandlerFunc {
 
 func ListOrdersHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		utils.DatabaseConnection_2(s)
+		utils.DatabaseConnection_3(s)
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		orders, err := repository.ListOrders(r.Context())

@@ -48,6 +48,13 @@ func CreatePlateHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error creating plate")
 			return
 		}
+
+		err = repository.AuditOperation(r.Context(), plate.Id.Hex(), "plate", "insert")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(plate)
 	}
@@ -86,6 +93,13 @@ func UpdatePlateHandler(s server.Server) http.HandlerFunc {
 			Image:    req.Image,
 			ImageRef: req.ImageRef,
 		}
+
+		err = repository.AuditOperation(r.Context(), params["id"], "plate", "update")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
 		plate, err := repository.UpdatePlate(r.Context(), &updatePlate, params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error updating plate")
@@ -102,7 +116,14 @@ func DeletePlateHandler(s server.Server) http.HandlerFunc {
 		//Handle request
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
-		err := repository.DeletePlate(r.Context(), params["id"])
+
+		err := repository.AuditOperation(r.Context(), params["id"], "plate", "delete")
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		err = repository.DeletePlate(r.Context(), params["id"])
 		if err != nil {
 			responses.BadRequest(w, "Error deleting plate")
 			return

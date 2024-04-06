@@ -19,6 +19,9 @@ var (
 		"user",
 		"table",
 		"role",
+		"plate",
+		"order",
+		"booking",
 	}
 )
 
