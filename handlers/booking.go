@@ -96,8 +96,37 @@ func GetBookingByIdHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting booking")
 			return
 		}
+
+		table, err := repository.GetTableById(r.Context(), booking.TableId.Hex())
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		profile, err := repository.GetUserById(r.Context(), booking.UserId.Hex())
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		order, err := repository.GetOrderById(r.Context(), booking.OrderId.Hex())
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		responseBooking := responses.BookingResponse{
+			Id:          booking.Id.Hex(),
+			Table:       *table,
+			User:        *profile,
+			Order:       *order,
+			Name:        booking.Name,
+			Description: booking.Description,
+			Date:        booking.Date,
+			Hour:        booking.Hour,
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(booking)
+		json.NewEncoder(w).Encode(responseBooking)
 	}
 }
 
@@ -179,9 +208,44 @@ func ListBookingsByPageHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting bookings")
 			return
 		}
+
+		responseBookings := []responses.BookingResponse{}
+		for _, booking := range bookings {
+			table, err := repository.GetTableById(r.Context(), booking.TableId.Hex())
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			profile, err := repository.GetUserById(r.Context(), booking.UserId.Hex())
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			order, err := repository.GetOrderById(r.Context(), booking.OrderId.Hex())
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			response := responses.BookingResponse{
+				Id:          booking.Id.Hex(),
+				Table:       *table,
+				User:        *profile,
+				Order:       *order,
+				Name:        booking.Name,
+				Description: booking.Description,
+				Date:        booking.Date,
+				Hour:        booking.Hour,
+			}
+
+			responseBookings = append(responseBookings, response)
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(responses.BookingResponse{
-			Booking:  bookings,
+		json.NewEncoder(w).Encode(responses.BookingsResponse{
+			Booking:  responseBookings,
 			Quantity: quantity,
 		})
 	}
@@ -218,7 +282,42 @@ func GetBookingsByIdsHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting bookings")
 			return
 		}
+
+		responseBookings := []responses.BookingResponse{}
+		for _, booking := range bookings {
+			table, err := repository.GetTableById(r.Context(), booking.TableId.Hex())
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			profile, err := repository.GetUserById(r.Context(), booking.UserId.Hex())
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			order, err := repository.GetOrderById(r.Context(), booking.OrderId.Hex())
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			response := responses.BookingResponse{
+				Id:          booking.Id.Hex(),
+				Table:       *table,
+				User:        *profile,
+				Order:       *order,
+				Name:        booking.Name,
+				Description: booking.Description,
+				Date:        booking.Date,
+				Hour:        booking.Hour,
+			}
+
+			responseBookings = append(responseBookings, response)
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(bookings)
+		json.NewEncoder(w).Encode(responseBookings)
 	}
 }
