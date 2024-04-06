@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -11,11 +12,13 @@ import (
 	"github.com/danielgz405/Resev/server"
 	"github.com/danielgz405/Resev/utils"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type InsertTableRequest struct {
 	Number      string `json:"number"`
 	Observation string `json:"observation"`
+	ImageBase64 string `json:"image_base64"`
 }
 
 func CreateTableHandler(s server.Server) http.HandlerFunc {
@@ -29,9 +32,20 @@ func CreateTableHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Invalid request body")
 			return
 		}
+
+		imageBytes, err := base64.StdEncoding.DecodeString(req.ImageBase64)
+		if err != nil {
+			responses.BadRequest(w, "Error decoding base64 image")
+			return
+		}
+
 		createTable := models.InsertTable{
 			Number:      req.Number,
 			Observation: req.Observation,
+			ImageBase64: primitive.Binary{
+				Subtype: 0,
+				Data:    imageBytes,
+			},
 		}
 		table, err := repository.InsertTable(r.Context(), &createTable)
 		if err != nil {

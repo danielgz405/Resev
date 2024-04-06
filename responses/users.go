@@ -9,7 +9,7 @@ type UserResponse struct {
 	Phone    string           `bson:"phone" json:"phone"`
 	Role     models.Role      `bson:"role" json:"role"`
 	Image    string           `bson:"image" json:"image"`
-	ImageRef string           `bson:"imageRef" json:"imageRef"`
+	ImageRef string           `bson:"image_ref" json:"image_ref"`
 	Bookings []models.Booking `json:"bookings"`
 }
 

@@ -10,7 +10,7 @@ type User struct {
 	Phone    string             `bson:"phone" json:"phone"`
 	Role_id  string             `bson:"role_id" json:"role_id"`
 	Image    string             `bson:"image" json:"image"`
-	ImageRef string             `bson:"imageRef" json:"imageRef"`
+	ImageRef string             `bson:"image_ref" json:"image_ref"`
 	Bookings []string           `bson:"bookings" json:"bookings"`
 }
 
@@ -21,7 +21,7 @@ type Profile struct {
 	Phone    string             `bson:"phone" json:"phone"`
 	Role_id  string             `bson:"role_id" json:"role_id"`
 	Image    string             `bson:"image" json:"image"`
-	ImageRef string             `bson:"imageRef" json:"imageRef"`
+	ImageRef string             `bson:"image_ref" json:"image_ref"`
 	Bookings []string           `bson:"bookings" json:"bookings"`
 }
 
@@ -40,6 +40,6 @@ type UpdateUser struct {
 	Phone    string   `bson:"phone" json:"phone"`
 	Role_id  string   `bson:"role_id" json:"role_id"`
 	Image    string   `bson:"image" json:"image"`
-	ImageRef string   `bson:"imageRef" json:"imageRef"`
+	ImageRef string   `bson:"image_ref" json:"image_ref"`
 	Bookings []string `bson:"bookings" json:"bookings"`
 }

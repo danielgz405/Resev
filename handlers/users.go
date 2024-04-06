@@ -28,7 +28,7 @@ type UpdateUserRequest struct {
 	Phone    string   `json:"phone"`
 	Role_id  string   `bson:"role_id" json:"role_id"`
 	Image    string   `json:"image"`
-	ImageRef string   `json:"imageRef"`
+	ImageRef string   `json:"image_ref"`
 	Bookings []string `json:"bookings"`
 }
 
