@@ -72,8 +72,43 @@ func GetOrderByIdHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting order")
 			return
 		}
+
+		platesIds := []string{}
+		for _, plate := range order.PlatesId {
+			platesIds = append(platesIds, plate.Hex())
+		}
+
+		table, err := repository.GetTableById(r.Context(), order.TableId)
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		profile, err := repository.GetUserById(r.Context(), order.UserId)
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		plates, err := repository.GetPlatesByIds(r.Context(), platesIds)
+		if err != nil {
+			responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		responseOrder := responses.OrderResponse{
+			Id:        order.Id.Hex(),
+			Table:     *table,
+			User:      *profile,
+			Plates:    plates,
+			SubTotal:  order.SubTotal,
+			Iva:       order.Iva,
+			Total:     order.Total,
+			TimeStamp: order.TimeStamp,
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(order)
+		json.NewEncoder(w).Encode(responseOrder)
 	}
 }
 
@@ -148,9 +183,51 @@ func ListOrdersByPageHandler(s server.Server) http.HandlerFunc {
 			responses.BadRequest(w, "Error getting orders")
 			return
 		}
+
+		responsesOrders := []responses.OrderResponse{}
+
+		for _, order := range orders {
+			platesIds := []string{}
+			for _, plate := range order.PlatesId {
+				platesIds = append(platesIds, plate.Hex())
+			}
+
+			table, err := repository.GetTableById(r.Context(), order.TableId)
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			profile, err := repository.GetUserById(r.Context(), order.UserId)
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			plates, err := repository.GetPlatesByIds(r.Context(), platesIds)
+			if err != nil {
+				responses.NoAuthResponse(w, http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+
+			response := responses.OrderResponse{
+				Id:        order.Id.Hex(),
+				Table:     *table,
+				User:      *profile,
+				Plates:    plates,
+				SubTotal:  order.SubTotal,
+				Iva:       order.Iva,
+				Total:     order.Total,
+				TimeStamp: order.TimeStamp,
+			}
+
+			responsesOrders = append(responsesOrders, response)
+
+		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(responses.OrderResponse{
-			Order:    orders,
+		json.NewEncoder(w).Encode(responses.OrdersResponse{
+			Order:    responsesOrders,
 			Quantity: quantity,
 		})
 	}
